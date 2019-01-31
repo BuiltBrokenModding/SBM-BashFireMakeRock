@@ -1,0 +1,16 @@
+[
+{
+  "modid": "bashfiremakerock",
+  "name": "BashFireMakeRock",
+  "description": "The world is litteraly on fire.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["LotuxPunk"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
