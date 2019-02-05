@@ -21,7 +21,8 @@ public class EventHandler
 {
 
     public static HashMap<BlockPos, ClickData> clickDataHashMap = new HashMap<>();
-    public static List<Block> authorizedBlocks = new ArrayList<>();
+    public static List<Block> supportedBlocks = new ArrayList();
+    public static List<IBlockState> supportedBlockStates = new ArrayList();
 
     @SubscribeEvent
     public static void onBlockPunch(PlayerInteractEvent.LeftClickBlock event)
@@ -77,7 +78,15 @@ public class EventHandler
      */
     public static boolean isBlockSupported(IBlockState iBlockState)
     {
-        return isBlockSupported(iBlockState.getBlock()); //TODO add support for block states
+        if(!supportedBlockStates.isEmpty())
+        {
+            boolean contained = supportedBlockStates.contains(iBlockState); //TODO check for super (E.g. ignore rotation)
+            if(ConfigMain.allowList && contained || !ConfigMain.allowList && !contained)
+            {
+                return true;
+            }
+        }
+        return isBlockSupported(iBlockState.getBlock());
     }
 
     /**
@@ -88,8 +97,8 @@ public class EventHandler
      */
     public static boolean isBlockSupported(Block block)
     {
-        return authorizedBlocks.isEmpty()
-                || ConfigMain.allowList && authorizedBlocks.contains(block)
-                || !ConfigMain.allowList && !authorizedBlocks.contains(block);
+        return supportedBlocks.isEmpty()
+                || ConfigMain.allowList && supportedBlocks.contains(block)
+                || !ConfigMain.allowList && !supportedBlocks.contains(block);
     }
 }
