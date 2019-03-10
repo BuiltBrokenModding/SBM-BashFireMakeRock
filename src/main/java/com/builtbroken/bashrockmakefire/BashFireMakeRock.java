@@ -1,23 +1,15 @@
 package com.builtbroken.bashrockmakefire;
 
 import com.builtbroken.bashrockmakefire.logic.EventHandler;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.MessageFormat;
-
-@Mod(modid = BashFireMakeRock.MODID, name = BashFireMakeRock.MOD_NAME, version = BashFireMakeRock.VERSION, acceptableRemoteVersions = "*")
+@Mod(modid = BashFireMakeRock.MODID, name = "[SBM] BashFireMakeRock", version = BashFireMakeRock.VERSION, acceptableRemoteVersions = "*")
 public class BashFireMakeRock
 {
-
-    public static final String MOD_NAME = "BashFireMakeRock";
     public static final String MODID = "bashfiremakerock";
 
     //Version injection data
@@ -29,7 +21,7 @@ public class BashFireMakeRock
     public static final String VERSION = MC_VERSION + "-" + MAJOR_VERSION + "." + MINOR_VERSION + "." + REVISION_VERSION + "." + BUILD_VERSION;
 
 
-    public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     @Mod.EventHandler
     public static void serverStart(FMLServerAboutToStartEvent event)

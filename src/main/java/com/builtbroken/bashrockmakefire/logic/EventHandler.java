@@ -1,12 +1,13 @@
 package com.builtbroken.bashrockmakefire.logic;
 
-import com.builtbroken.bashrockmakefire.ConfigMain;
 import com.builtbroken.bashrockmakefire.BashFireMakeRock;
+import com.builtbroken.bashrockmakefire.ConfigMain;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -27,46 +28,67 @@ public class EventHandler
     @SubscribeEvent
     public static void onBlockPunch(PlayerInteractEvent.LeftClickBlock event)
     {
-        if (!event.getWorld().isRemote)
+        try
         {
-            //Get what we are clicking TODO check if we need a ray trace as event stores face and block
-            final RayTraceResult result = new RayTraceResult(event.getHitVec(), event.getFace(), event.getPos());
-            if (result.typeOfHit == RayTraceResult.Type.BLOCK)
+            if (!event.getWorld().isRemote)
             {
-                //Get the position and block
-                final BlockPos clickPos = result.getBlockPos();
-                final IBlockState blockTarget = event.getWorld().getBlockState(clickPos);
-                if (isBlockSupported(blockTarget))
+                //Get what we are clicking TODO check if we need a ray trace as event stores face and block
+                final RayTraceResult result = new RayTraceResult(event.getHitVec(), event.getFace(), event.getPos());
+                if (result.typeOfHit == RayTraceResult.Type.BLOCK)
                 {
-                    if (clickDataHashMap.containsKey(clickPos))
+                    //Get the position and block
+                    final BlockPos clickPos = result.getBlockPos();
+                    final IBlockState blockTarget = event.getWorld().getBlockState(clickPos);
+                    if (isBlockSupported(blockTarget))
                     {
-                        if (clickDataHashMap.get(clickPos).click())
+                        if (clickDataHashMap.containsKey(clickPos))
                         {
-                            //Check if we can place fire
-                            final BlockPos firePos = clickPos.up();
-                            final IBlockState blockAbove = event.getWorld().getBlockState(firePos);
-                            if (blockAbove.getBlock().isReplaceable(event.getWorld(), firePos))
+                            if (clickDataHashMap.get(clickPos).click())
                             {
-                                event.setCanceled(true);
-                                event.getWorld().setBlockState(firePos, Blocks.FIRE.getDefaultState());
-                            }
+                                //Check if we can place fire
+                                final BlockPos firePos = clickPos.up();
+                                final IBlockState blockAbove = event.getWorld().getBlockState(firePos);
+                                if (blockAbove.getBlock().isReplaceable(event.getWorld(), firePos))
+                                {
+                                    event.setCanceled(true);
+                                    event.getWorld().setBlockState(firePos, Blocks.FIRE.getDefaultState());
+                                    if (event.getEntityPlayer().getGameProfile() != null)
+                                    {
+                                        BashFireMakeRock.LOGGER.info(
+                                                event.getEntityPlayer().getGameProfile().getName() + " [" + event.getEntityPlayer().getGameProfile().getId() + "]"
+                                                        + " created fire at " + firePos
+                                                        + " in world " + event.getWorld().getWorldInfo().getWorldName()
+                                                        + " dim: " + event.getWorld().provider.getDimension());
+                                    }
+                                }
 
-                            //Remove as we are done
-                            clickDataHashMap.remove(clickPos);
+                                //Remove as we are done
+                                clickDataHashMap.remove(clickPos);
+                            }
+                        }
+                        else
+                        {
+                            clickDataHashMap.put(clickPos, new ClickData(clickPos));
                         }
                     }
-                    else
-                    {
-                        clickDataHashMap.put(clickPos, new ClickData(clickPos));
-                    }
                 }
-            }
 
-            //Clear dead entries TODO check for performance hit on larger servers
-            clickDataHashMap.keySet().stream()
-                    .filter(e -> clickDataHashMap.get(e).isDead())
-                    .collect(Collectors.toList())
-                    .forEach(e -> clickDataHashMap.remove(e));
+                //Clear dead entries TODO check for performance hit on larger servers
+                clickDataHashMap.keySet().stream()
+                        .filter(e -> clickDataHashMap.get(e).isDead())
+                        .collect(Collectors.toList())
+                        .forEach(e -> clickDataHashMap.remove(e));
+            }
+        }
+        catch (Exception e)
+        {
+            String data =
+                    event.getEntityPlayer().getGameProfile().getName() + " [" + event.getEntityPlayer().getGameProfile().getId() + "]"
+                            + " created fire at " + event.getPos()
+                            + " in world " + event.getWorld().getWorldInfo().getWorldName()
+                            + " dim: " + event.getWorld().provider.getDimension();
+            BashFireMakeRock.LOGGER.error("Unexpected error while handling click event for '" + data + "'", e);
+            event.getEntityPlayer().sendMessage(new TextComponentTranslation(BashFireMakeRock.MODID + ":error.event.click"));
         }
     }
 
@@ -78,10 +100,10 @@ public class EventHandler
      */
     public static boolean isBlockSupported(IBlockState iBlockState)
     {
-        if(!supportedBlockStates.isEmpty())
+        if (!supportedBlockStates.isEmpty())
         {
             boolean contained = supportedBlockStates.contains(iBlockState); //TODO check for super (E.g. ignore rotation)
-            if(ConfigMain.allowList && contained || !ConfigMain.allowList && !contained)
+            if (ConfigMain.allowList && contained || !ConfigMain.allowList && !contained)
             {
                 return true;
             }

@@ -10,61 +10,61 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.MessageFormat;
 
-@Config(modid = BashFireMakeRock.MODID, name = BashFireMakeRock.MOD_NAME)
+@Config.LangKey("config.bashfiremakerock:title")
+@Config(modid = BashFireMakeRock.MODID, name = "sbm/BashFireMakeRock")
+@Mod.EventBusSubscriber(modid = BashFireMakeRock.MODID)
 public class ConfigMain
 {
-
-    public static Delay DELAY = new Delay();
-
-    @Config.LangKey("bashfiremakerock.config.chance_per_click")
+    @Config.LangKey("config.bashfiremakerock:chance")
     @Config.Comment("Chance to start a fire. 1/X [Default : 1/2]")
     public static int chancePerClick = 2;
 
-    @Config.LangKey("bashfiremakerock.config.blocks")
+    @Config.LangKey("config.bashfiremakerock:blocks")
     @Config.Name("block_list")
     @Config.Comment("Blocks that can generate a fire tile when clicked. " +
             "Examples : minecraft:dirt, minecraft:stone,... 1 item per line")
     public static String[] blocks = {};
 
-    @Config.LangKey("bashfiremakerock.config.blocks.allow")
+    @Config.LangKey("config.bashfiremakerock:blocks.allow")
     @Config.Name("allow_list")
     @Config.Comment("Sets the block list to be used as an allow only list. Set to false to use as a ban list.")
     public static boolean allowList = true;
 
-    @Config.LangKey("bfmr.config.start")
+    @Config.LangKey("config.bashfiremakerock:start")
     @Config.Name("number_of_clicks")
     @Config.Comment("Number of clicks before rolling chance for fire to generate.")
     public static int numberOfClickBeforeChance = 3;
 
-    public static class Delay
-    {
+    @Config.LangKey("config.bashfiremakerock:delay.min")
+    @Config.Name("min_delay")
+    @Config.Comment("Minimal time between clicks for it to be recorded.")
+    public static double minimalDelay = 0.5;
 
-        @Config.LangKey("bashfiremakerock.config.delay.min")
-        @Config.Name("min_delay")
-        @Config.Comment("Minimal time between clicks for it to be recorded.")
-        public double minimalDelay = 0.5;
-
-        @Config.LangKey("bashfiremakerock.config.delay.max")
-        @Config.Name("max_delay")
-        @Config.Comment("Max time to wait for the next click before clearing recorded clicks.")
-        public double maxDelay = 3;
-    }
+    @Config.LangKey("config.bashfiremakerock:delay.max")
+    @Config.Name("max_delay")
+    @Config.Comment("Max time to wait for the next click before clearing recorded clicks.")
+    public static double maxDelay = 3;
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
     {
-        if (event.getModID() == BashFireMakeRock.MODID)
+        if (event.getModID().equals(BashFireMakeRock.MODID))
         {
+            ConfigManager.sync(BashFireMakeRock.MODID, Config.Type.INSTANCE);
             initBlockData();
         }
     }
 
+    /**
+     * Called to load all block data for  {@link EventHandler#supportedBlocks} & {@link EventHandler#supportedBlockStates}
+     */
     public static void initBlockData()
     {
         //Clear previous
