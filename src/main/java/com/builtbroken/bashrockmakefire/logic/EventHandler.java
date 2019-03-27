@@ -66,11 +66,8 @@ public class EventHandler
                 }
             }
 
-            //Clear dead entries TODO check for performance hit on larger servers
-            clickDataHashMap.keySet().stream()
-                    .filter(e -> clickDataHashMap.get(e).isDead())
-                    .collect(Collectors.toList())
-                    .forEach(e -> clickDataHashMap.remove(e));
+            //Clear dead entries
+            clickDataHashMap.entrySet().removeIf(e->e.getValue().isDead());
         }
         catch (Exception e)
         {
