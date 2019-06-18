@@ -89,7 +89,8 @@ public class ConfigMain
                     {
                         BashFireMakeRock.LOGGER.error("Config: Failed to parse block state '" + entry + "'");
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     BashFireMakeRock.LOGGER.error("Config: Failed to parse JSON block state entry '" + e + "'");
                 }

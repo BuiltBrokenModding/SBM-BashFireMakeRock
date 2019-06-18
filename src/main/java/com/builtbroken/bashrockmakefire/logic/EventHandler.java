@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -15,7 +14,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = BashFireMakeRock.MODID)
 public class EventHandler
@@ -28,56 +26,59 @@ public class EventHandler
     @SubscribeEvent
     public static void onBlockPunch(PlayerInteractEvent.LeftClickBlock event)
     {
-        try
+        if (!event.getWorld().isRemote)
         {
-            //Get the position and block
-            final BlockPos clickPos = event.getPos();
-            final IBlockState blockTarget = event.getWorld().getBlockState(clickPos);
-            if (isBlockSupported(blockTarget))
+            try
             {
-                if (clickDataHashMap.containsKey(clickPos))
+                //Get the position and block
+                final BlockPos clickPos = event.getPos();
+                final IBlockState blockTarget = event.getWorld().getBlockState(clickPos);
+                if (isBlockSupported(blockTarget))
                 {
-                    if (clickDataHashMap.get(clickPos).click())
+                    if (clickDataHashMap.containsKey(clickPos))
                     {
-                        //Check if we can place fire
-                        final BlockPos firePos = clickPos.up();
-                        final IBlockState blockAbove = event.getWorld().getBlockState(firePos);
-                        if (blockAbove.getBlock().isReplaceable(event.getWorld(), firePos))
+                        if (clickDataHashMap.get(clickPos).click())
                         {
-                            event.setCanceled(true);
-                            event.getWorld().setBlockState(firePos, Blocks.FIRE.getDefaultState());
-                            if (event.getEntityPlayer().getGameProfile() != null)
+                            //Check if we can place fire
+                            final BlockPos firePos = clickPos.up();
+                            final IBlockState blockAbove = event.getWorld().getBlockState(firePos);
+                            if (blockAbove.getBlock().isReplaceable(event.getWorld(), firePos))
                             {
-                                BashFireMakeRock.LOGGER.info(
-                                        event.getEntityPlayer().getGameProfile().getName() + " [" + event.getEntityPlayer().getGameProfile().getId() + "]"
-                                                + " created fire at " + firePos
-                                                + " in world " + event.getWorld().getWorldInfo().getWorldName()
-                                                + " dim: " + event.getWorld().provider.getDimension());
+                                event.setCanceled(true);
+                                event.getWorld().setBlockState(firePos, Blocks.FIRE.getDefaultState());
+                                if (event.getEntityPlayer().getGameProfile() != null)
+                                {
+                                    BashFireMakeRock.LOGGER.info(
+                                            event.getEntityPlayer().getGameProfile().getName() + " [" + event.getEntityPlayer().getGameProfile().getId() + "]"
+                                                    + " created fire at " + firePos
+                                                    + " in world " + event.getWorld().getWorldInfo().getWorldName()
+                                                    + " dim: " + event.getWorld().provider.getDimension());
+                                }
                             }
-                        }
 
-                        //Remove as we are done
-                        clickDataHashMap.remove(clickPos);
+                            //Remove as we are done
+                            clickDataHashMap.remove(clickPos);
+                        }
+                    }
+                    else
+                    {
+                        clickDataHashMap.put(clickPos, new ClickData(clickPos));
                     }
                 }
-                else
-                {
-                    clickDataHashMap.put(clickPos, new ClickData(clickPos));
-                }
-            }
 
-            //Clear dead entries
-            clickDataHashMap.entrySet().removeIf(e->e.getValue().isDead());
-        }
-        catch (Exception e)
-        {
-            String data =
-                    event.getEntityPlayer().getGameProfile().getName() + " [" + event.getEntityPlayer().getGameProfile().getId() + "]"
-                            + " created fire at " + event.getPos()
-                            + " in world " + event.getWorld().getWorldInfo().getWorldName()
-                            + " dim: " + event.getWorld().provider.getDimension();
-            BashFireMakeRock.LOGGER.error("Unexpected error while handling click event for '" + data + "'", e);
-            event.getEntityPlayer().sendMessage(new TextComponentTranslation(BashFireMakeRock.MODID + ":error.event.click"));
+                //Clear dead entries
+                clickDataHashMap.entrySet().removeIf(e -> e.getValue().isDead());
+            }
+            catch (Exception e)
+            {
+                String data =
+                        event.getEntityPlayer().getGameProfile().getName() + " [" + event.getEntityPlayer().getGameProfile().getId() + "]"
+                                + " created fire at " + event.getPos()
+                                + " in world " + event.getWorld().getWorldInfo().getWorldName()
+                                + " dim: " + event.getWorld().provider.getDimension();
+                BashFireMakeRock.LOGGER.error("Unexpected error while handling click event for '" + data + "'", e);
+                event.getEntityPlayer().sendMessage(new TextComponentTranslation(BashFireMakeRock.MODID + ":error.event.click"));
+            }
         }
     }
 
