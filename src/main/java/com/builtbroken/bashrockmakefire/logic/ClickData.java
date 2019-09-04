@@ -23,13 +23,13 @@ public class ClickData
     public boolean click()
     {
         long diff = System.currentTimeMillis() - lastTimeClicked;
-        if (diff >= ConfigMain.minimalDelay * 1000)
+        if (diff >= ConfigMain.minimalDelay() * 1000)
         {
             timesClicked++;
             lastTimeClicked = System.currentTimeMillis();
-            if (timesClicked > ConfigMain.numberOfClickBeforeChance)
+            if (timesClicked > ConfigMain.numberOfClickBeforeChance())
             {
-                return ConfigMain.chancePerClick <= 0 || random.nextInt(ConfigMain.chancePerClick) == 0;
+                return ConfigMain.numberOfClickBeforeChance() <= 0 || random.nextInt(ConfigMain.chancePerClick()) == 0;
             }
         }
         return false;
@@ -37,7 +37,7 @@ public class ClickData
 
     public boolean isDead()
     {
-        return System.currentTimeMillis() - lastTimeClicked > ConfigMain.maxDelay * 1000;
+        return System.currentTimeMillis() - lastTimeClicked > ConfigMain.maxDelay() * 1000;
     }
 
     public BlockPos getPos()

@@ -1,13 +1,17 @@
 package com.builtbroken.bashrockmakefire;
 
 import com.builtbroken.bashrockmakefire.logic.EventHandler;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = BashFireMakeRock.MODID, name = "[SBM] BashFireMakeRock", version = BashFireMakeRock.VERSION, acceptableRemoteVersions = "*")
+@Mod(BashFireMakeRock.MODID)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class BashFireMakeRock
 {
     public static final String MODID = "bashfiremakerock";
@@ -23,14 +27,18 @@ public class BashFireMakeRock
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
-    @Mod.EventHandler
+    //Config ain't being generated but the code can somehow fetch its values
+    public BashFireMakeRock() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigMain.CONFIG_SPEC);
+    }
+
+    @SubscribeEvent
     public static void serverStart(FMLServerAboutToStartEvent event)
     {
         EventHandler.clickDataHashMap.clear();
-        ConfigMain.initBlockData();
     }
 
-    @Mod.EventHandler
+    @SubscribeEvent
     public static void serverStop(FMLServerStoppedEvent event)
     {
         EventHandler.clickDataHashMap.clear();
