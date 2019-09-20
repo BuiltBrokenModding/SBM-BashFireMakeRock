@@ -1,9 +1,10 @@
 package com.builtbroken.bashrockmakefire.logic;
 
-import com.builtbroken.bashrockmakefire.ConfigMain;
-import net.minecraft.util.math.BlockPos;
-
 import java.util.Random;
+
+import com.builtbroken.bashrockmakefire.ConfigMain;
+
+import net.minecraft.util.math.BlockPos;
 
 public class ClickData
 {
@@ -27,9 +28,9 @@ public class ClickData
         {
             timesClicked++;
             lastTimeClicked = System.currentTimeMillis();
-            if (timesClicked > ConfigMain.numberOfClickBeforeChance())
+            if (timesClicked > ConfigMain.numberOfClicksBeforeChance())
             {
-                return ConfigMain.numberOfClickBeforeChance() <= 0 || random.nextInt(ConfigMain.chancePerClick()) == 0;
+                return ConfigMain.chancePerClick() <= 0 || random.nextInt(ConfigMain.chancePerClick()) == 0;
             }
         }
         return false;
