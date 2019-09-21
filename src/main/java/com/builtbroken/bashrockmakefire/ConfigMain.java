@@ -29,7 +29,7 @@ public class ConfigMain
     public final ForgeConfigSpec.BooleanValue allowList;
     public final ForgeConfigSpec.ConfigValue<Integer> numberOfClicksBeforeChance;
     public final ForgeConfigSpec.ConfigValue<Double> minimalDelay;
-    public final ForgeConfigSpec.ConfigValue<Integer> maxDelay;
+    public final ForgeConfigSpec.ConfigValue<Double> maxDelay;
 
     static {
         Pair<ConfigMain,ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ConfigMain::new);
@@ -38,7 +38,7 @@ public class ConfigMain
 
     }
 
-    ConfigMain(ForgeConfigSpec.Builder builder) //TODO: lang keys if possible
+    ConfigMain(ForgeConfigSpec.Builder builder)
     {
         chancePerClick = builder
                 .comment("Chance to start a fire. 1/X [Default : 1/2]")
@@ -63,7 +63,7 @@ public class ConfigMain
 
         maxDelay = builder
                 .comment("Max time to wait for the next click before clearing recorded clicks.")
-                .define("max_delay", 3);
+                .define("max_delay", 3.0);
     }
 
 
@@ -92,7 +92,7 @@ public class ConfigMain
         return CONFIG.minimalDelay.get();
     }
 
-    public static int maxDelay()
+    public static double maxDelay()
     {
         return CONFIG.maxDelay.get();
     }
