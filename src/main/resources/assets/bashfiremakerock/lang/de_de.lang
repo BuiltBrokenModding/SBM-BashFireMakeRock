@@ -1,0 +1,9 @@
+config.bashfiremakerock:title=Allgemein
+config.bashfiremakerock:chance=Chance auf Feuer
+config.bashfiremakerock:blocks=Blöcke
+config.bashfiremakerock:blocks.allow=Erlaubte Liste
+config.bashfiremakerock:start=Minimum an Klicks für Feuer
+config.bashfiremakerock:delay.min=Verzögerung zwischen Klicks
+config.bashfiremakerock:delay.max=Verzögerung um Klicks zu merken
+
+bashfiremakerock:error.event.click=Fehler beim Handlen eines Events!! Benachrichtige einen Administrator, den Konosolenlog einzusehen.
