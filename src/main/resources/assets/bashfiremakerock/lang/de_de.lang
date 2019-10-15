@@ -1,4 +1,4 @@
-config.bashfiremakerock:title=Main
+config.bashfiremakerock:title=Allgemein
 config.bashfiremakerock:chance=Chance auf Feuer
 config.bashfiremakerock:blocks=Blöcke
 config.bashfiremakerock:blocks.allow=Erlaubte Liste
